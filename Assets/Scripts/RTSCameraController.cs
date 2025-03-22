@@ -25,7 +25,7 @@ public class RTSCameraController : MonoBehaviour
     void Start()
     {
         mainCam = Camera.main;
-        currentZoom = -cameraPivot.localPosition.z;
+        currentZoom = -cameraPivot.localPosition.y;
     }
 
     void Update()
@@ -68,13 +68,19 @@ public class RTSCameraController : MonoBehaviour
     void HandleZoom()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-        currentZoom -= scroll * zoomSpeed * Time.deltaTime;
-        currentZoom = Mathf.Clamp(currentZoom, minZoom, maxZoom);
+        if (Mathf.Abs(scroll) > 0.01f)
+        {
+            Vector3 pivotPos = cameraPivot.localPosition;
+            float zoomChange = scroll * zoomSpeed * Time.deltaTime;
 
-        Vector3 newPos = cameraPivot.localPosition;
-        newPos.z = -currentZoom;
-        cameraPivot.localPosition = newPos;
+            pivotPos.y -= zoomChange; // Zoom up/down
+            pivotPos.y = Mathf.Clamp(pivotPos.y, minZoom, maxZoom);
+
+            cameraPivot.localPosition = pivotPos;
+        }
     }
+
+
 
     void HandleRotation()
     {
